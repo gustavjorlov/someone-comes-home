@@ -25,9 +25,13 @@ This system uses a PIR (Passive Infrared) sensor to detect motion at your entryw
 
 ## Software Requirements
 
-- Node.js 16+ on Raspberry Pi
+- Node.js 16+ on Raspberry Pi (for running the built application)
 - Twilio account for SMS
 - AWS account for S3 photo storage (optional)
+
+**For Development:**
+- Node.js 16+ and npm
+- TypeScript compiler (installed via npm)
 
 ## Quick Start
 
@@ -48,12 +52,14 @@ If using camera:
 # Clone and setup
 git clone <repository-url>
 cd someone-comes-home
+
+# For development (install dependencies and build)
 npm install
 npm run build
 
-# Create environment file
-cp .env.example .env
-# Edit .env with your configuration
+# For production deployment on Raspberry Pi
+# Copy the built files from dist/ folder to your Pi
+# Only Node.js runtime is required on the Pi
 ```
 
 ### 3. Configuration
@@ -86,35 +92,42 @@ S3_BUCKET_NAME=your-bucket
 PHOTO_CLEANUP_ENABLED=true
 ```
 
-### 4. Run
+### 4. Deployment & Running
+
+**On Raspberry Pi:**
 
 ```bash
-# Development
-npm test
-npm run build
+# Copy built files to your Raspberry Pi
+scp -r dist/ pi@your-pi-ip:~/someone-comes-home/
+scp .env pi@your-pi-ip:~/someone-comes-home/
+
+# On the Pi, run the built application
+cd ~/someone-comes-home
 node dist/app.js
 
-# Production with PM2
-npm install -g pm2
-pm2 start dist/app.js --name pir-sms
-pm2 save
-pm2 startup
+# Or set up as a systemd service
+sudo systemctl start someone-comes-home
+sudo systemctl enable someone-comes-home
 ```
 
 ## Development
 
+**Note**: Development requires Node.js and TypeScript. The built JavaScript files run on Raspberry Pi with just the Node.js runtime.
+
 ### Testing
 
 ```bash
-npm test                    # Run all tests with coverage
-npm run test:watch         # Watch mode during development
+npm test                   # Run all tests with coverage
+npm run build              # Build TypeScript to JavaScript
 ```
 
-### Building
+### Building for Production
 
 ```bash
-npm run build              # Compile TypeScript to dist/
+npm run build              # Compile TypeScript to dist/ folder
 ```
+
+The build process compiles TypeScript source files from `src/` into JavaScript files in `dist/`. These built files can be deployed to any Node.js environment, including your Raspberry Pi.
 
 ### Project Structure
 

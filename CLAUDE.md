@@ -18,14 +18,14 @@ A Raspberry Pi-based system that detects arrivals using a PIR sensor and sends S
 - Make sure the readme has clear instructions on how to run the project.
 
 ## Technology Stack
-- Node.js/TypeScript
+- Deno/TypeScript (compiles to binary)
 - PIR Sensor (HC-SR501)
 - Raspberry Pi Camera Module v2
 - Twilio SMS API (`twilio` npm package)
-- GPIO control (`onoff` npm package)
+- GPIO control (custom FFI implementation)
 - AWS S3 for photo storage
-- Express.js for health endpoint
-- Vitest for testing (minimal terminal output)
+- Deno HTTP server for health endpoint
+- Deno testing framework (minimal terminal output)
 
 ## Project Structure
 ```
@@ -75,16 +75,19 @@ PHOTO_CLEANUP_ENABLED=true
 - Enable camera: `sudo raspi-config` → Interface Options → Camera → Enable
 
 ## Development Commands
-- **Test**: `npm test` (minimal terminal output)
-- **Build**: `npm run build`
+- **Test**: `deno task test` (minimal terminal output)
+- **Build**: `deno task build` (compiles to binary)
+- **Dev**: `deno task dev` (watch mode)
+- **Start**: `deno task start`
 
 ## Development Environment
 - Development: macOS (this machine)
-- Production: Raspberry Pi with Node.js
+- Production: Raspberry Pi with Deno binary (no runtime dependencies)
 
 ## Deployment
-- Uses PM2 for process management: `pm2 start dist/app.js --name pir-sms`
-- Autostart: `pm2 save && pm2 startup`
+- Single binary deployment: `./bin/someone-comes-home`
+- Systemd service for autostart
+- No runtime dependencies (self-contained binary)
 
 ## Testing Strategy
 - TDD approach with comprehensive unit tests

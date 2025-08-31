@@ -1,5 +1,21 @@
-node_modules/
+# Environment files
 .env
-dist/
+.env.local
+
+# Build artifacts
+bin/
 coverage/
+
+# Logs
 *.log
+
+# Deno cache
+.deno/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

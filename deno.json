@@ -1,0 +1,22 @@
+{
+  "name": "@someone-comes-home/pir-detector",
+  "version": "1.0.0",
+  "exports": "./src/app.ts",
+  "tasks": {
+    "test": "deno test --coverage --allow-env --allow-net",
+    "build": "deno compile --allow-read --allow-write --allow-net --allow-env --allow-ffi --output ./bin/someone-comes-home ./src/app.ts",
+    "dev": "deno run --allow-read --allow-write --allow-net --allow-env --allow-ffi --watch ./src/app.ts",
+    "start": "deno run --allow-read --allow-write --allow-net --allow-env --allow-ffi ./src/app.ts"
+  },
+  "imports": {
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.0",
+    "@std/http": "jsr:@std/http@^1.0.5",
+    "@std/assert": "jsr:@std/assert@^1.0.4",
+    "@std/testing": "jsr:@std/testing@^1.0.1",
+    "twilio": "npm:twilio@^5.8.2"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true
+  }
+}
