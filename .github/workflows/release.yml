@@ -82,14 +82,22 @@ jobs:
     - name: Create release directory
       run: |
         mkdir -p ./release
-        find ./artifacts -type f -executable -exec cp {} ./release/ \;
+        # Copy all artifact files to release directory
+        find ./artifacts -type f -name 'someone-comes-home-*' -exec cp {} ./release/ \;
+        # Make sure all binaries are executable
+        chmod +x ./release/someone-comes-home-*
         ls -la ./release/
 
     - name: Create checksums
       run: |
         cd ./release
-        sha256sum * > checksums.txt
-        cat checksums.txt
+        if [ "$(ls -A .)" ]; then
+          sha256sum * > checksums.txt
+          cat checksums.txt
+        else
+          echo "No files found in release directory"
+          exit 1
+        fi
 
     - name: Create install script
       run: |
