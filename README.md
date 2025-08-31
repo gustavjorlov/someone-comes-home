@@ -25,13 +25,13 @@ This system uses a PIR (Passive Infrared) sensor to detect motion at your entryw
 
 ## Software Requirements
 
-- Node.js 16+ on Raspberry Pi (for running the built application)
+- No runtime dependencies on Raspberry Pi (self-contained binary)
 - Twilio account for SMS
 - AWS account for S3 photo storage (optional)
 
-**For Development:**
-- Node.js 16+ and npm
-- TypeScript compiler (installed via npm)
+**For Development Only:**
+- Deno 1.40+ for building from source
+- No other dependencies required
 
 ## Quick Start
 
@@ -46,20 +46,30 @@ If using camera:
 - Connect Raspberry Pi Camera Module v2 to CSI port
 - Enable camera: `sudo raspi-config` → Interface Options → Camera → Enable
 
-### 2. Software Installation
+### 2. Easy Installation (Recommended)
+
+**One-line install on Raspberry Pi:**
 
 ```bash
-# Clone and setup
-git clone <repository-url>
-cd someone-comes-home
+curl -sSL https://github.com/gustavjorlov/someone-comes-home/releases/latest/download/install.sh | bash
+```
 
-# For development (install dependencies and build)
-npm install
-npm run build
+This will:
+- Auto-detect your system (Linux ARM64 for Raspberry Pi)
+- Download the latest binary
+- Install to `/usr/local/bin`
+- Create systemd service
+- Set up configuration template
 
-# For production deployment on Raspberry Pi
-# Copy the built files from dist/ folder to your Pi
-# Only Node.js runtime is required on the Pi
+**Manual Installation:**
+
+```bash
+# Download binary for your platform
+wget https://github.com/gustavjorlov/someone-comes-home/releases/latest/download/someone-comes-home-linux-arm64
+
+# Make executable and install
+chmod +x someone-comes-home-linux-arm64
+sudo mv someone-comes-home-linux-arm64 /usr/local/bin/someone-comes-home
 ```
 
 ### 3. Configuration
@@ -92,42 +102,101 @@ S3_BUCKET_NAME=your-bucket
 PHOTO_CLEANUP_ENABLED=true
 ```
 
-### 4. Deployment & Running
+### 4. Running the Application
 
-**On Raspberry Pi:**
+**If you used the install script:**
 
 ```bash
-# Copy built files to your Raspberry Pi
-scp -r dist/ pi@your-pi-ip:~/someone-comes-home/
-scp .env pi@your-pi-ip:~/someone-comes-home/
+# 1. Edit configuration
+sudo nano /opt/someone-comes-home/.env
 
-# On the Pi, run the built application
-cd ~/someone-comes-home
-node dist/app.js
-
-# Or set up as a systemd service
+# 2. Start the service
 sudo systemctl start someone-comes-home
 sudo systemctl enable someone-comes-home
+
+# 3. Check status
+sudo systemctl status someone-comes-home
+
+# 4. View logs
+sudo journalctl -f -u someone-comes-home
+```
+
+**Manual run:**
+
+```bash
+# Create config file
+cp .env.example .env
+# Edit .env with your settings
+
+# Run directly
+./someone-comes-home
+# or if installed globally:
+someone-comes-home
 ```
 
 ## Development
 
-**Note**: Development requires Node.js and TypeScript. The built JavaScript files run on Raspberry Pi with just the Node.js runtime.
+**Note**: Development requires Deno. The compiled binary runs on Raspberry Pi with no runtime dependencies.
 
 ### Testing
 
 ```bash
-npm test                   # Run all tests with coverage
-npm run build              # Build TypeScript to JavaScript
+deno task test             # Run all tests with coverage
 ```
 
 ### Building for Production
 
 ```bash
-npm run build              # Compile TypeScript to dist/ folder
+deno task build            # Compile to self-contained binary
 ```
 
-The build process compiles TypeScript source files from `src/` into JavaScript files in `dist/`. These built files can be deployed to any Node.js environment, including your Raspberry Pi.
+### Building from Source
+
+```bash
+# Clone repository
+git clone https://github.com/gustavjorlov/someone-comes-home.git
+cd someone-comes-home
+
+# Run tests
+deno task test
+
+# Build binary
+deno task build
+
+# The binary will be at ./bin/someone-comes-home
+```
+
+The build process compiles all TypeScript source files and dependencies into a single self-contained binary that can run on any compatible system without installing Deno or any other runtime.
+
+## Releases
+
+Pre-built binaries are automatically created for each release:
+
+- **Linux ARM64** (`someone-comes-home-linux-arm64`) - For Raspberry Pi 4, Pi 5, and other ARM64 systems
+- **Linux x64** (`someone-comes-home-linux-x64`) - For standard Linux servers
+- **macOS ARM64** (`someone-comes-home-macos-arm64`) - For Apple Silicon Macs
+- **macOS x64** (`someone-comes-home-macos-x64`) - For Intel Macs
+
+Each release includes:
+- Pre-compiled binaries for all platforms
+- SHA256 checksums for verification
+- Installation script for easy setup
+- Release notes with changes
+
+### Automatic Updates
+
+The install script will always fetch the latest release. To update an existing installation:
+
+```bash
+# Re-run the install script
+curl -sSL https://github.com/gustavjorlov/someone-comes-home/releases/latest/download/install.sh | bash
+
+# Or manually download and replace the binary
+sudo systemctl stop someone-comes-home
+sudo wget -O /usr/local/bin/someone-comes-home https://github.com/gustavjorlov/someone-comes-home/releases/latest/download/someone-comes-home-linux-arm64
+sudo chmod +x /usr/local/bin/someone-comes-home
+sudo systemctl start someone-comes-home
+```
 
 ### Project Structure
 
@@ -158,7 +227,8 @@ tests/
 
 - **Health Check**: `GET http://your-pi:3000/health`
 - **Logs**: Structured JSON logs to console
-- **PM2 Monitoring**: `pm2 monit` for process monitoring
+- **System Monitoring**: `sudo systemctl status someone-comes-home` for process monitoring
+- **Real-time Logs**: `sudo journalctl -f -u someone-comes-home`
 
 ## Troubleshooting
 
