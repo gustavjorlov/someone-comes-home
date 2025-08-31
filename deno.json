@@ -4,19 +4,25 @@
   "exports": "./src/app.ts",
   "tasks": {
     "test": "deno test --coverage --allow-env --allow-net",
-    "build": "deno compile --allow-read --allow-write --allow-net --allow-env --allow-ffi --output ./bin/someone-comes-home ./src/app.ts",
-    "dev": "deno run --allow-read --allow-write --allow-net --allow-env --allow-ffi --watch ./src/app.ts",
-    "start": "deno run --allow-read --allow-write --allow-net --allow-env --allow-ffi ./src/app.ts"
+    "build": "deno compile --output ./bin/someone-comes-home ./src/app.ts",
+    "dev": "deno run --watch ./src/app.ts",
+    "start": "deno run ./src/app.ts"
   },
   "imports": {
     "@std/dotenv": "jsr:@std/dotenv@^0.225.0",
-    "@std/http": "jsr:@std/http@^1.0.5",
-    "@std/assert": "jsr:@std/assert@^1.0.4",
-    "@std/testing": "jsr:@std/testing@^1.0.1",
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@std/testing": "jsr:@std/testing@^1.0.0",
     "twilio": "npm:twilio@^5.8.2"
   },
   "compilerOptions": {
-    "lib": ["deno.window"],
     "strict": true
-  }
+  },
+  "permissions": {
+    "read": true,
+    "write": true,
+    "net": true,
+    "env": true,
+    "ffi": true
+  },
+  "lock": "./deno.lock"
 }

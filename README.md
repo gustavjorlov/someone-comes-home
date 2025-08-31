@@ -30,7 +30,7 @@ This system uses a PIR (Passive Infrared) sensor to detect motion at your entryw
 - AWS account for S3 photo storage (optional)
 
 **For Development Only:**
-- Deno 1.40+ for building from source
+- Deno 2.0+ for building from source
 - No other dependencies required
 
 ## Quick Start
@@ -136,7 +136,7 @@ someone-comes-home
 
 ## Development
 
-**Note**: Development requires Deno. The compiled binary runs on Raspberry Pi with no runtime dependencies.
+**Note**: Development requires Deno 2.0+. The compiled binary runs on Raspberry Pi with no runtime dependencies.
 
 ### Testing
 

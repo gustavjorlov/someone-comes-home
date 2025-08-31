@@ -11,11 +11,6 @@ mkdir -p bin
 # Compile for the current platform (development)
 echo "Compiling for current platform..."
 deno compile \
-  --allow-read \
-  --allow-write \
-  --allow-net \
-  --allow-env \
-  --allow-ffi \
   --output ./bin/someone-comes-home \
   ./src/app.ts
 
