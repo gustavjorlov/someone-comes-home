@@ -4,7 +4,65 @@ Awesome—here’s a tight, complete plan you can build from.
 
 * **Detect arrival** using a PIR sensor at the entryway.
 * **Filter noise**: warm-up handling, debounce, and cooldown to avoid SMS spam.
-* **Time window** (optional): only notify during configured hours.
+* **Time ## 11) Raspberry Pi Camera Integration
+
+**Tests**
+
+* `takes photo on arrival detection`
+* `uploads photo to S3 with timestamp filename`
+* `handles camera capture errors gracefully`
+* `handles S3 upload failures gracefully`
+* `cleans up local photos after successful upload`
+
+**Implement**
+
+* Add dependencies: `npm i aws-sdk sharp raspicam`
+* Create `camera.ts`:
+  * `capturePhoto(): Promise<string>` - captures photo and returns local file path
+  * Uses `raspicam` library to interface with Pi camera module
+  * Saves photos with timestamp: `arrival-YYYY-MM-DD-HH-mm-ss.jpg`
+* Create `s3-uploader.ts`:
+  * `uploadPhoto(filePath: string): Promise<string>` - uploads to S3 and returns S3 URL
+  * Uses AWS SDK with credentials from environment
+  * Organizes photos in S3 with date-based prefixes: `arrivals/YYYY/MM/DD/`
+* Update `motion.ts`:
+  * On valid arrival detection:
+    1. Send SMS notification (existing)
+    2. Capture photo
+    3. Upload to S3
+    4. Clean up local file
+  * Log all camera/upload operations
+  * Continue normal operation even if camera/upload fails
+* Add config variables:
+  * `CAMERA_ENABLED` (boolean, default true)
+  * `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`
+  * `S3_BUCKET_NAME`
+  * `PHOTO_CLEANUP_ENABLED` (boolean, default true)
+
+**Hardware Setup**
+
+* Connect Raspberry Pi Camera Module v2 to CSI port
+* Enable camera in `raspi-config`: `sudo raspi-config` → Interface Options → Camera → Enable
+* Test camera: `raspistill -o test.jpg`
+
+**S3 Setup**
+
+* Create S3 bucket with appropriate permissions
+* Create IAM user with S3 upload permissions for the bucket
+* Configure bucket policy for organized storage and lifecycle rules
+
+## Backlog / nice-to-have
+
+* Presence check (skip SMS if your phone is on home Wi-Fi).
+* Event history (SQLite) and a tiny web dashboard.
+* Home/Away schedule presets and holiday mute.
+* Secondary notifier (Telegram) and "nighttime escalation to SMS".
+* Motion-triggered video recording (short clips instead of/in addition to photos).
+* Photo analysis using AWS Rekognition to identify known vs unknown faces.
+* Local photo storage with web gallery for reviewing arrival photos.
+* Photo compression and thumbnail generation for faster uploads.
+
+If you want, I can turn this into a starter repo layout with stubbed files and the first test suite ready to run. (optional): only notify during configured hours.
 * **Single notifier**: Twilio SMS (pluggable so you can add Telegram/Email later).
 * **Config via env** (GPIO pin, cooldown, phone numbers, Twilio creds).
 * **Health & logs**: simple `/health` endpoint and structured logs.
@@ -68,9 +126,12 @@ tests/
   motion.test.ts
   notifier.twilio.test.ts
   app.integration.test.ts
+.gitignore
 ```
 
 ## 1) Config (red → green → refactor)
+
+Add node_modules and .env to .gitignore
 
 **Tests you write first**
 
