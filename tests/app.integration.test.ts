@@ -1,0 +1,1 @@
+// Application integration tests - to be implemented in phase 6

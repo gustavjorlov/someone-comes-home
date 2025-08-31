@@ -1,0 +1,1 @@
+// GPIO adapter stub - to be implemented in phase 4

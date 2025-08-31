@@ -1,0 +1,1 @@
+// Application wiring stub - to be implemented in phase 6

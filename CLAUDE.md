@@ -11,6 +11,12 @@ A Raspberry Pi-based system that detects arrivals using a PIR sensor and sends S
 - Health endpoint monitoring
 - Structured logging
 
+## Way of working
+- As features are added to the project, their intentions and APIs should be documented in README.md.
+- Code changes should be accompanied by tests that validate the new behavior.
+- Split code files into reasonably big modules with clear responsibilities.
+- Make sure the readme has clear instructions on how to run the project.
+
 ## Technology Stack
 - Node.js/TypeScript
 - PIR Sensor (HC-SR501)
